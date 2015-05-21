@@ -13,18 +13,14 @@
 </head>
 <body>
 
-  <h1>Recorder.js example</h1>
-  <p>Before you enable monitoring, make sure to either plug in headphones or turn the volume down.</p>
-  <p>This ogg opus implementation does not support more than 2 channels.</p>
+  <h1>Demo</h1>
 
-  <h2>Options</h2>
-
-  <div>
+  <div style="display:none;">
     <label>monitorGain</label>
     <input id="monitorGain" type="number" value="0" />
   </div>
 
-  <div>
+  <div style="display:none;">
     <label>bitDepth</label>
     <select id="bitDepth">
       <option value="8">8</option> 
@@ -34,22 +30,22 @@
     </select>
   </div>
 
-  <div>
+  <div style="display:none;">
     <label>numberOfChannels</label>
     <input id="numberOfChannels" type="number" value="1" />
   </div>
 
-  <div>
+  <div style="display:none;">
     <label>recordOpus</label>
-    <input type="checkbox" id="recordOpus" checked />
+    <input type="checkbox" id="recordOpus" />
   </div>
 
-  <div>
+  <div style="display:none;"> <!--style="display:none;"-->
     <label>sampleRate</label>
-    <input id="sampleRate" type="number" value="48000" />
+    <input id="sampleRate" type="number" value="16000" />
   </div>
 
-  <div>
+  <div style="display:none;">
     <label>bitRate</label>
     <input id="bitRate" type="number" value="64000" />
   </div>
