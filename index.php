@@ -4,6 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Live input record and playback</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="recorder.js"></script>
   <style type='text/css'>
     ul { list-style: none; }
@@ -59,7 +60,10 @@
   
   <h2>Recordings</h2>
   <ul id="recordingslist"></ul>
-  
+
+  <div id="urlContainer"></div>
+  <div id="formContainer"></div>
+
   <h2>Log</h2>
   <pre id="log"></pre>
 
@@ -108,25 +112,82 @@
         init.disabled = pause.disabled = resume.disabled = stopButton.disabled = true;
         start.disabled = false;
       });
-      recorder.addEventListener( "dataAvailable", function(e){
+      recorder.addEventListener("dataAvailable", function(e){
         var fileName = new Date().toISOString() + "." + e.detail.type.split("/")[1];
         var url = URL.createObjectURL( e.detail );
         var audio = document.createElement('audio');
         audio.controls = true;
         audio.src = url;
+        audio.id = 'audio';
+
         var link = document.createElement('a');
         link.href = url;
         link.download = fileName;
         link.innerHTML = link.download;
+
         var li = document.createElement('li');
+
         li.appendChild(link);
         li.appendChild(audio);
         recordingslist.appendChild(li);
+
+        console.log(audio.src);
+
+        uploadAudio(dataURItoBlob(audio.src));
+
       });
     });
+
     function screenLogger(text, data) {
       log.innerHTML += "\n" + text + " " + (data || '');
     }
   </script>
-</body>
+
+  <script type="text/javascript">
+
+    function uploadAudio( blob ) {
+      var reader = new FileReader();
+      reader.onload = function(event){
+        var fd = {};
+        fd["fname"] = "test.wav";
+        fd["data"] = event.target.result;
+        $.ajax({
+          type: 'POST',
+          url: 'upload.php',
+          data: fd,
+          dataType: 'text'
+        }).done(function(data) {
+            console.log(data);
+        });
+      };
+      reader.readAsDataURL(blob);
+    }
+
+    function dataURItoBlob(dataURL) {
+      var BASE64_MARKER = ';base64,';
+      if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        var parts = dataURL.split(',');
+        var contentType = parts[0].split(':')[1];
+        var raw = decodeURIComponent(parts[1]);
+
+        return new Blob([raw], {type: contentType});
+      }
+
+      var parts = dataURL.split(BASE64_MARKER);
+      var contentType = parts[0].split(':')[1];
+      var raw = window.atob(parts[1]);
+      var rawLength = raw.length;
+
+      var uInt8Array = new Uint8Array(rawLength);
+
+      for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+
+      return new Blob([uInt8Array], {type: contentType});
+    }
+
+  </script>
+
+  </body>
 </html>
