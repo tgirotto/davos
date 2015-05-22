@@ -5,7 +5,9 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Live input record and playback</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="webcam.js"></script>
   <script src="recorder.js"></script>
+
   <style type='text/css'>
     ul { list-style: none; }
     li { margin: 1em; }
@@ -52,7 +54,7 @@
   </div>
 
   <h2>Commands</h2>
-  <button id="init">init</button>
+  <button id="init" onclick="take_snapshot();">init</button>
   <button id="start" disabled>start</button>
   <button id="pause" disabled>pause</button>
   <button id="resume" disabled>resume</button>
@@ -68,9 +70,16 @@
       <pre id="log"></pre>
   </div>
 
+  <div id="my_camera" style="width:320px; height:240px;"></div>
+  <div id="my_result"></div>
+
   <br>
   <div id="translationContainer"></div>
 
+  <br>
+  <div id="imageDetectionContainer"></div>
+
+  <script src="index.js"></script>
   <script>
     var recorder;
     start.addEventListener( "click", function(){ recorder.start(); });
@@ -143,32 +152,6 @@
     function screenLogger(text, data) {
       log.innerHTML += "\n" + text + " " + (data || '');
     }
-  </script>
-
-  <script type="text/javascript">
-
-    function uploadAudio( blob ) {
-      var reader = new FileReader();
-      reader.onload = function(event){
-        var fd = {};
-        fd["fname"] = "test.wav";
-        fd["data"] = event.target.result;
-        $.ajax({
-          type: 'POST',
-          url: 'upload.php',
-          data: fd,
-          dataType: 'text'
-        }).done(function(data) {
-            appendTranslation(data);
-        });
-      };
-      reader.readAsDataURL(blob);
-    }
-
-    function appendTranslation(data) {
-      document.getElementById('translationContainer').innerHTML = data;
-    }
-
   </script>
 
   </body>
