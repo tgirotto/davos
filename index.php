@@ -58,14 +58,18 @@
   <button id="resume" disabled>resume</button>
   <button id="stopButton" disabled>stop</button>
   
-  <h2>Recordings</h2>
-  <ul id="recordingslist"></ul>
+  <div style="display:none;">
+    <h2>Recordings</h2>
+    <ul id="recordingslist"></ul>
+  </div>
+  
+  <div style="display:none;">
+      <h2>Log</h2>
+      <pre id="log"></pre>
+  </div>
 
-  <div id="urlContainer"></div>
-  <div id="formContainer"></div>
-
-  <h2>Log</h2>
-  <pre id="log"></pre>
+  <br>
+  <div id="translationContainer"></div>
 
   <script>
     var recorder;
@@ -114,6 +118,7 @@
       });
       recorder.addEventListener("dataAvailable", function(e){
         var fileName = new Date().toISOString() + "." + e.detail.type.split("/")[1];
+
         var url = URL.createObjectURL( e.detail );
         var audio = document.createElement('audio');
         audio.controls = true;
@@ -131,10 +136,7 @@
         li.appendChild(audio);
         recordingslist.appendChild(li);
 
-        console.log(audio.src);
-
-        uploadAudio(dataURItoBlob(audio.src));
-
+        uploadAudio(e.detail);
       });
     });
 
@@ -157,34 +159,14 @@
           data: fd,
           dataType: 'text'
         }).done(function(data) {
-            console.log(data);
+            appendTranslation(data);
         });
       };
       reader.readAsDataURL(blob);
     }
 
-    function dataURItoBlob(dataURL) {
-      var BASE64_MARKER = ';base64,';
-      if (dataURL.indexOf(BASE64_MARKER) == -1) {
-        var parts = dataURL.split(',');
-        var contentType = parts[0].split(':')[1];
-        var raw = decodeURIComponent(parts[1]);
-
-        return new Blob([raw], {type: contentType});
-      }
-
-      var parts = dataURL.split(BASE64_MARKER);
-      var contentType = parts[0].split(':')[1];
-      var raw = window.atob(parts[1]);
-      var rawLength = raw.length;
-
-      var uInt8Array = new Uint8Array(rawLength);
-
-      for (var i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-      }
-
-      return new Blob([uInt8Array], {type: contentType});
+    function appendTranslation(data) {
+      document.getElementById('translationContainer').innerHTML = data;
     }
 
   </script>
